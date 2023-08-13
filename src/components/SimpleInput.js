@@ -1,13 +1,18 @@
 import { useState } from "react";
+import useInput from "../hooks/use-input";
 
 const SimpleInput = (props) => {
-  const [enteredvalue, setValue] = useState("");
-  const [enteredNameIsTouched, setEnteredNameIsTouched] = useState(false);
+  const {
+    value: enteredName,
+    hasError: nameIsInvalid,
+    isValid: enteredNameIsValid,
+    inputChangeHandler: nameInputChangeHandler,
+    inputBlurHandler: nameInputBlurHandler,
+    reset: nameInputReset,
+  } = useInput((value) => value.trim() !== "");
+
   const [enteredEmail, setEmail] = useState("");
   const [enteredEmailIsTouched, setEnteredEmailIsTouched] = useState(false);
-
-  const enteredNameIsValid = enteredvalue.trim() !== "";
-  const nameIsInvalid = !enteredNameIsValid && enteredNameIsTouched;
 
   const enteredEmailIsValid =
     enteredEmail.trim() !== "" && enteredEmail.trim().includes("@");
@@ -20,14 +25,6 @@ const SimpleInput = (props) => {
     formIsValid = false;
   }
 
-  const inputHandler = (event) => {
-    setValue(event.target.value);
-  };
-
-  const nameInputBlurHandler = () => {
-    setEnteredNameIsTouched(true);
-  };
-
   const emailInputHandler = (event) => {
     setEmail(event.target.value);
   };
@@ -38,19 +35,18 @@ const SimpleInput = (props) => {
 
   const submitHandler = (event) => {
     event.preventDefault();
-    setEnteredNameIsTouched(true);
     setEnteredEmailIsTouched(true);
 
     if (!formIsValid) {
       return;
     }
 
-    console.log(enteredvalue);
+    console.log(enteredName);
     console.log(enteredEmail);
 
-    setValue("");
+    nameInputReset();
+
     setEmail("");
-    setEnteredNameIsTouched(false);
     setEnteredEmailIsTouched(false);
   };
 
@@ -66,9 +62,9 @@ const SimpleInput = (props) => {
         <input
           type="text"
           id="name"
-          onChange={inputHandler}
+          onChange={nameInputChangeHandler}
           onBlur={nameInputBlurHandler}
-          value={enteredvalue}
+          value={enteredName}
         />
         {nameIsInvalid && <p className="error-text">Name is required</p>}
       </div>
