@@ -1,4 +1,3 @@
-import { useState } from "react";
 import useInput from "../hooks/use-input";
 
 const SimpleInput = (props) => {
@@ -11,12 +10,14 @@ const SimpleInput = (props) => {
     reset: nameInputReset,
   } = useInput((value) => value.trim() !== "");
 
-  const [enteredEmail, setEmail] = useState("");
-  const [enteredEmailIsTouched, setEnteredEmailIsTouched] = useState(false);
-
-  const enteredEmailIsValid =
-    enteredEmail.trim() !== "" && enteredEmail.trim().includes("@");
-  const emailIsInvalid = !enteredEmailIsValid && enteredEmailIsTouched;
+  const {
+    value: enteredEmail,
+    hasError: emailIsInvalid,
+    isValid: enteredEmailIsValid,
+    inputChangeHandler: emailInputHandler,
+    inputBlurHandler: eamilInputBlurHandler,
+    reset: emailInputReset,
+  } = useInput((value) => value.trim().includes("@"));
 
   let formIsValid = false;
   if (enteredNameIsValid && enteredEmailIsValid) {
@@ -25,17 +26,8 @@ const SimpleInput = (props) => {
     formIsValid = false;
   }
 
-  const emailInputHandler = (event) => {
-    setEmail(event.target.value);
-  };
-
-  const emailInputBlurHandler = () => {
-    setEnteredEmailIsTouched(true);
-  };
-
   const submitHandler = (event) => {
     event.preventDefault();
-    setEnteredEmailIsTouched(true);
 
     if (!formIsValid) {
       return;
@@ -46,8 +38,7 @@ const SimpleInput = (props) => {
 
     nameInputReset();
 
-    setEmail("");
-    setEnteredEmailIsTouched(false);
+    emailInputReset();
   };
 
   const formClasses = nameIsInvalid ? "form-control invalid" : "form-control";
@@ -75,7 +66,7 @@ const SimpleInput = (props) => {
           type="email"
           id="email"
           onChange={emailInputHandler}
-          onBlur={emailInputBlurHandler}
+          onBlur={eamilInputBlurHandler}
           value={enteredEmail}
         />
         {emailIsInvalid && <p className="error-text">Email is required</p>}
